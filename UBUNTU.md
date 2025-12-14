@@ -45,14 +45,85 @@ Last Modified: 14/12/2025
     sudo ufw allow 3389
     ```
 
-### Essential Apps
-1. Git / Vim 
-    ```
-    sudo apt install curl git vim
+### Essentials
+```
+sudo apt install curl git vim
 
-    git config --global user.name "kefhuang"
-    git config --global user.email "aqr.kefhuang@gmail.com"
-    git config --global core.editor vim
+git config --global user.name "kefhuang"
+git config --global user.email "aqr.kefhuang@gmail.com"
+git config --global core.editor vim
+```
+
+#### ZSH
+1. Install ZSH
+    ```
+    sudo apt install zsh
+    chsh -s $(which zsh)
+    ```
+2. Install OMZ
+    ```
+    # Oh my Zsh
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    ```
+3. Install Font
+    ```
+    wget -O "$HOME/Downloads/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+    wget -O "$HOME/Downloads/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+    wget -O "$HOME/Downloads/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+    wget -O "$HOME/Downloads/MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+    sudo mkdir -p /usr/share/fonts/truetype/MesloLGS
+    sudo mv "$HOME/Downloads/MesloLGS NF Regular.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Regular.ttf
+    sudo mv "$HOME/Downloads/MesloLGS NF Bold.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Bold.ttf
+    sudo mv "$HOME/Downloads/MesloLGS NF Italic.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Italic.ttf
+    sudo mv "$HOME/Downloads/MesloLGS NF Bold Italic.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Bold\ Italic.ttf
+    fc-cache -f -v
+    ```
+4. Install P10K
+    ```
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+    ```
+5. OMZ Extensions
+    ```
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    ```
+6. Import Configs
+    ```
+    mkdir ~/Apps
+    cd ~/Apps
+    git clone https://github.com/kefhuang/config.git
+
+    cd ~/Apps/config
+    if [ -f "$HOME/.zshrc" ]; then
+        rm "$HOME/.zshrc"
+    fi
+    ln -s `pwd`/configs/.common.zshrc $HOME/.common.zshrc
+    ln -s `pwd`/configs/.p10k.zsh $HOME/.p10k.zsh
+    ln -s `pwd`/configs/.vimrc $HOME/.vimrc
+    ```
+7. Setup `.zshrc`
+    ```
+    echo 'if [ -f ~/.common.zshrc ]; then
+        source ~/.common.zshrc
+    fi' >> $HOME/.zshrc
+    ```
+
+#### Miniconda
+1. Install Miniconda
+    ```
+    mkdir -p ~/Apps/Miniconda
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/Apps/Miniconda/miniconda.sh
+    bash ~/Apps/Miniconda/miniconda.sh -b -u -p ~/Apps/Miniconda
+    rm ~/Apps/Miniconda/miniconda.sh
+    ```
+2. Shell Initialization
+    ```
+    source ~/Apps/Miniconda/bin/activate
+    conda init zsh
+    ```
+3. Prevent auto activate base
+    ```
+    conda config --set auto_activate false
     ```
 
 #### 1Password
@@ -67,85 +138,6 @@ Source: https://support.1password.com/install-linux/#debian-or-ubuntu
 #### Dropbox
 Source: https://www.dropbox.com/install-linux
 
-#### VSCode
-
-
-### Shell (Zsh) Customize
-```
-sudo apt install zsh
-chsh -s $(which zsh)
-
-# Oh my Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# p10k & fonts
-wget -O "$HOME/Downloads/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-wget -O "$HOME/Downloads/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-wget -O "$HOME/Downloads/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-wget -O "$HOME/Downloads/MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-sudo mkdir -p /usr/share/fonts/truetype/MesloLGS
-sudo mv "$HOME/Downloads/MesloLGS NF Regular.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Regular.ttf
-sudo mv "$HOME/Downloads/MesloLGS NF Bold.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Bold.ttf
-sudo mv "$HOME/Downloads/MesloLGS NF Italic.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Italic.ttf
-sudo mv "$HOME/Downloads/MesloLGS NF Bold Italic.ttf" /usr/share/fonts/truetype/MesloLGS/MesloLGS\ NF\ Bold\ Italic.ttf
-fc-cache -f -v
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-
-# Other Extensions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-
-# Import Configs
-mkdir ~/Apps
-cd ~/Apps
-git clone https://github.com/kefhuang/config.git
-
-cd ~/Apps/config
-if [ -f "$HOME/.zshrc" ]; then
-	rm "$HOME/.zshrc"
-fi
-ln -s `pwd`/configs/.common.zshrc $HOME/.common.zshrc
-ln -s `pwd`/configs/.p10k.zsh $HOME/.p10k.zsh
-ln -s `pwd`/configs/.vimrc $HOME/.vimrc
-```
-
-add the follwoing to `.zshrc`
-```
-echo 'if [ -f ~/.common.zshrc ]; then
-    source ~/.common.zshrc
-fi' >> .zshrc
-```
-
-### Addition Softwares
-
-#### Miniconda
-```
-mkdir -p ~/Apps/Miniconda
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/Apps/Miniconda/miniconda.sh
-bash ~/Apps/Miniconda/miniconda.sh -b -u -p ~/Apps/Miniconda
-rm ~/Apps/Miniconda/miniconda.sh
-```
-Then paster the following into the `.zshrc.local`
-```
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/kefhuang/Apps/Miniconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/kefhuang/Apps/Miniconda/etc/profile.d/conda.sh" ]; then
-        . "/home/kefhuang/Apps/Miniconda/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/kefhuang/Apps/Miniconda/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-```
-To deactivate conda from auto load the base environment
-```
-conda config --set auto_activate_base false
-```
 
 #### Docker
 ```
