@@ -1,15 +1,49 @@
 # Ubuntu Setup
-Last Modified: 22/12/2024
+Last Modified: 14/12/2025
 
 ## Step by Step
 
-### Drivers
-Nvidia Drivers
-```
-sudo apt update
-sudo apt install nvidia-driver-550
-```
-Now `reboot`
+### Nvidia Driver
+1. Update software sources
+    ```
+    sudo apt update
+    sudo apt upgrade -y
+    ```
+2. Automatically detect and install recommended drivers: This is the safest method, as the system will automatically match the graphics card model
+    ```
+    sudo ubuntu-drivers autoinstall
+    ```
+3. Reboot Computer
+    ```
+    sudo reboot
+    ```
+4. Verify installation with
+    ```
+    nvidia-smi
+    ```
+
+### Remote Access
+1. Install SSH Service
+    ```
+    sudo apt install -y openssh-server
+    sudo systemctl enable ssh
+    sudo systemctl start ssh
+    ```
+2. Install XRDP
+    ```
+    sudo apt install -y xrdp
+    sudo systemctl enable xrdp
+    sudo systemctl start xrdp
+    ```
+3. Fix potential XRDP black screen/crash issues on Ubuntu (configure ssl-cert user group)
+    ```
+    sudo adduser xrdp ssl-cert
+    ```
+4. Allow traffic through the firewall
+    ```
+    sudo ufw allow ssh
+    sudo ufw allow 3389
+    ```
 
 ### Essential Apps
 ```
