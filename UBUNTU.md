@@ -46,15 +46,15 @@ Last Modified: 14/12/2025
     ```
 
 ### Essential Apps
-```
-sudo apt install curl git vim
+1. Git / Vim 
+    ```
+    sudo apt install curl git vim
 
-git config --global user.name "kefhuang"
-git config --global user.email "aqr.kefhuang@gmail.com"
-git config --global core.editor vim
-```
+    git config --global user.name "kefhuang"
+    git config --global user.email "aqr.kefhuang@gmail.com"
+    git config --global core.editor vim
+    ```
 
-#### Chrome
 #### 1Password
 ```
 curl -sS https://downloads.1password.com/linux/keys/1password.asc | sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
@@ -98,17 +98,22 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 # Import Configs
 mkdir ~/Apps
 cd ~/Apps
-git clone https://github.com/kefhuang/SystemConfigs.git
+git clone https://github.com/kefhuang/config.git
 
-cd ~/Apps/SystemConfigs
+cd ~/Apps/config
 if [ -f "$HOME/.zshrc" ]; then
 	rm "$HOME/.zshrc"
 fi
-ln -s `pwd`/configs/zshrc $HOME/.zshrc
-ln -s `pwd`/configs/zshrc.common $HOME/.zshrc.common
-ln -s `pwd`/configs/p10k.zsh $HOME/.p10k.zsh
-ln -s `pwd`/configs/vimrc $HOME/.vimrc
+ln -s `pwd`/configs/.common.zshrc $HOME/.common.zshrc
+ln -s `pwd`/configs/.p10k.zsh $HOME/.p10k.zsh
+ln -s `pwd`/configs/.vimrc $HOME/.vimrc
+```
 
+add the follwoing to `.zshrc`
+```
+echo 'if [ -f ~/.common.zshrc ]; then
+    source ~/.common.zshrc
+fi' >> .zshrc
 ```
 
 ### Addition Softwares
