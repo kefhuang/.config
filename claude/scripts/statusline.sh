@@ -14,11 +14,13 @@ usage=$(echo "$input" | jq '.context_window.current_usage')
 if [ "$usage" != "null" ]; then
   current=$(echo "$usage" | jq '.input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens')
   size=$(echo "$input" | jq '.context_window.context_window_size')
-  pct=$((current * 100 / size))
-  color=$green
-  [ "$pct" -ge 50 ] && color=$yellow
-  [ "$pct" -ge 80 ] && color=$red
-  printf "${color}%d%%${reset}${dim} context${reset} | " "$pct"
+  if [ "$size" -gt 0 ] 2>/dev/null; then
+    pct=$((current * 100 / size))
+    color=$green
+    [ "$pct" -ge 50 ] && color=$yellow
+    [ "$pct" -ge 80 ] && color=$red
+    printf "${color}%d%%${reset}${dim} context${reset} | " "$pct"
+  fi
 fi
 
 printf "${cyan}%s${reset} in ${magenta}%s${reset}" \
