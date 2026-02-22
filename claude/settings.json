@@ -1,0 +1,11 @@
+{
+  "includeCoAuthoredBy": false,
+  "alwaysThinkingEnabled": true,
+  "compaction": {
+    "auto": false
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/statusline.sh"
+  }
+}

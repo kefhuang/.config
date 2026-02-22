@@ -2,16 +2,23 @@
 *
 
 # Allowed directories
-!wezterm/
-!wezterm/**
 !zsh/
 !zsh/**
 !vim/
 !vim/**
-!ubuntu/
-!ubuntu/**
 !tmux/
 !tmux/**
+
+# Claude Code config (whitelist specific files only)
+!claude/
+claude/*
+!claude/settings.json
+!claude/scripts/
+!claude/scripts/**
+!claude/commands/
+!claude/commands/**
+!claude/agents/
+!claude/agents/**
 
 # Allowed root files
 !README.md
