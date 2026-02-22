@@ -1,4 +1,10 @@
 #
+# Prompt
+#
+
+zmodule romkatv/powerlevel10k --use degit
+
+#
 # Modules
 #
 

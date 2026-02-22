@@ -1,2 +1,5 @@
-source ~/.config/zsh/plugins.zsh
+source ~/.config/zsh/init.zsh
+source ~/.config/zsh/env.zsh
+source ~/.config/zsh/alias.zsh
 source ~/.config/zsh/mappings.zsh
+source ~/.config/zsh/prompt.zsh
