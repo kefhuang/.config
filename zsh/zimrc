@@ -12,8 +12,10 @@ zmodule utility
 # Completion
 #
 
-zmodule zsh-users/zsh-completions --fpath src
+zmodule zsh-users/zsh-completions
+zmodule agkozak/zsh-z
 zmodule completion
+zmodule Aloxaf/fzf-tab
 
 #
 # Modules that must be initialized last
