@@ -1,0 +1,24 @@
+#
+# Modules
+#
+
+zmodule environment
+zmodule git
+zmodule input
+zmodule termtitle
+zmodule utility
+
+#
+# Completion
+#
+
+zmodule zsh-users/zsh-completions --fpath src
+zmodule completion
+
+#
+# Modules that must be initialized last
+#
+
+zmodule zdharma-continuum/fast-syntax-highlighting
+zmodule zsh-users/zsh-history-substring-search
+zmodule zsh-users/zsh-autosuggestions
