@@ -8,6 +8,8 @@
 !vim/**
 !tmux/
 !tmux/**
+!aerospace/
+!aerospace/**
 
 # Claude Code config (whitelist specific files only)
 !claude/
