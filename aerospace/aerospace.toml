@@ -30,6 +30,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "W"]
 
 [mode.main.binding]
     ctrl-alt-t = 'exec-and-forget open -na Ghostty'
+    ctrl-alt-f = '''exec-and-forget osascript -e 'tell application "Finder" to make new Finder window to POSIX file "/Users/kefhuang/Dropbox"' -e 'tell application "Finder" to activate' '''
     alt-f = 'fullscreen'
 
     alt-slash = 'layout tiles horizontal vertical'
@@ -84,6 +85,10 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "W"]
     alt-shift-j = ['join-with down', 'mode main']
     alt-shift-k = ['join-with up', 'mode main']
     alt-shift-l = ['join-with right', 'mode main']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'now.typeless.desktop'

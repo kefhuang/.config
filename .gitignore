@@ -10,6 +10,8 @@
 !tmux/**
 !aerospace/
 !aerospace/**
+!wezterm/
+!wezterm/**
 
 # Claude Code config (whitelist specific files only)
 !claude/
