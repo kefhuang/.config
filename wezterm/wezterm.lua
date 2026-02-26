@@ -68,12 +68,14 @@ end
 wezterm.on('format-tab-title', function(tab, tabs)
   local title = tab.active_pane.title
   title = title:gsub('^%w+@[^:]+:%s*', ''):gsub('^[^:]+:%s*', '')
-  if tab.tab_index > 0 then
+  local curr_host = get_host(tab.active_pane)
+  local show_host = tab.tab_index == 0
+  if not show_host and tab.tab_index > 0 then
     local prev_host = get_host(tabs[tab.tab_index].active_pane)
-    local curr_host = get_host(tab.active_pane)
-    if prev_host ~= curr_host then
-      title = curr_host .. ': ' .. title
-    end
+    show_host = prev_host ~= curr_host
+  end
+  if show_host then
+    title = curr_host .. ': ' .. title
   end
   if tab.is_active then
     return {
