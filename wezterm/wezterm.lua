@@ -65,6 +65,35 @@ local function get_host(pane)
   return h:lower()
 end
 
+local function shrink_path(path, max_len)
+  if #path <= max_len then return path end
+
+  local prefix = ''
+  local rest = path
+  if rest:sub(1, 2) == '~/' then
+    prefix = '~/'
+    rest = rest:sub(3)
+  elseif rest:sub(1, 1) == '/' then
+    prefix = '/'
+    rest = rest:sub(2)
+  else
+    return path
+  end
+
+  local parts = {}
+  for part in rest:gmatch('[^/]+') do
+    table.insert(parts, part)
+  end
+  if #parts <= 1 then return path end
+
+  for i = 1, #parts - 1 do
+    parts[i] = parts[i]:sub(1, 1)
+    local result = prefix .. table.concat(parts, '/')
+    if #result <= max_len then return result end
+  end
+  return prefix .. table.concat(parts, '/')
+end
+
 wezterm.on('format-tab-title', function(tab, tabs)
   local title = tab.active_pane.title
   title = title:gsub('^%w+@[^:]+:%s*', ''):gsub('^[^:]+:%s*', '')
@@ -74,6 +103,8 @@ wezterm.on('format-tab-title', function(tab, tabs)
     local prev_host = get_host(tabs[tab.tab_index].active_pane)
     show_host = prev_host ~= curr_host
   end
+  local max_title = 32
+  title = shrink_path(title, max_title)
   if show_host then
     title = curr_host .. ': ' .. title
   end
