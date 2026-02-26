@@ -24,14 +24,17 @@ config.window_padding = {
   bottom = '0.5cell',
 }
 config.show_new_tab_button_in_tab_bar = false
-config.show_close_tab_button_in_tabs = false
+config.use_fancy_tab_bar = false
+config.tab_max_width = 64
 config.window_frame = {
   font = wezterm.font({ family = 'Maple Mono NF CN', weight = 'Bold' }),
   font_size = 14,
   active_titlebar_bg = '#1e1e2e',
   inactive_titlebar_bg = '#1e1e2e',
+  border_top_height = '0.3cell',
+  border_top_color = '#1e1e2e',
 }
-config.window_decorations = 'RESIZE'
+config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 config.colors = {
   tab_bar = {
     background = '#1e1e2e',
@@ -51,21 +54,37 @@ config.colors = {
   },
 }
 
-local function extract_host(title)
-  local host = title:match('^%w+@([^:]+)') or title:match('^([^:]+)')
-  return host or ''
+local function get_host(pane)
+  local cwd = pane.current_working_dir
+  if cwd then
+    local host = tostring(cwd):match('^file://([^/]+)')
+    if host then return host:lower() end
+  end
+  local title = pane.title
+  local h = title:match('^%w+@([^:]+)') or title:match('^([^:]+)') or wezterm.hostname()
+  return h:lower()
 end
 
 wezterm.on('format-tab-title', function(tab, tabs)
   local title = tab.active_pane.title
-  title = title:gsub('^%w+@', '')
+  title = title:gsub('^%w+@[^:]+:%s*', ''):gsub('^[^:]+:%s*', '')
   if tab.tab_index > 0 then
-    local prev_title = tabs[tab.tab_index].active_pane.title
-    if extract_host(prev_title) == extract_host(tab.active_pane.title) then
-      title = title:gsub('^[^:]+:%s*', '')
+    local prev_host = get_host(tabs[tab.tab_index].active_pane)
+    local curr_host = get_host(tab.active_pane)
+    if prev_host ~= curr_host then
+      title = curr_host .. ': ' .. title
     end
   end
-  return ' ' .. title .. ' '
+  if tab.is_active then
+    return {
+      { Text = ' ' },
+      { Attribute = { Underline = 'Single' } },
+      { Text = title },
+      { Attribute = { Underline = 'None' } },
+      { Text = ' ' },
+    }
+  end
+  return { { Text = ' ' .. title .. ' ' } }
 end)
 
 config.keys = {

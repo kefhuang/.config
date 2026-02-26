@@ -18,6 +18,11 @@ if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
 fi
 source ${ZIM_HOME}/init.zsh
 
+chpwd() {
+  printf '\033]7;file://%s%s\033\\' "$HOST" "$PWD"
+}
+chpwd
+
 if [[ -d "$HOME/miniconda3" ]]; then
   conda() {
     unfunction conda

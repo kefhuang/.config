@@ -29,7 +29,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "W"]
     outer.right =      8
 
 [mode.main.binding]
-    ctrl-alt-t = 'exec-and-forget open -na Ghostty'
+    ctrl-alt-t = 'exec-and-forget open -na WezTerm'
     ctrl-alt-f = '''exec-and-forget osascript -e 'tell application "Finder" to make new Finder window to POSIX file "/Users/kefhuang/Dropbox"' -e 'tell application "Finder" to activate' '''
     alt-f = 'fullscreen'
 
@@ -92,7 +92,7 @@ run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'now.typeless.desktop'
-run = 'move-node-to-workspace Z'
+run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'

@@ -1,0 +1,1 @@
+wssh() { wezterm cli spawn --domain-name "SSHMUX:$1"; }
