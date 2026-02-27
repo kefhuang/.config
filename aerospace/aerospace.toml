@@ -97,12 +97,12 @@ run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
-if.window-title-regex-substring = 'Photos and Videos'
-run = 'layout floating'
+if.window-title-regex-substring = '^Weixin$'
+run = 'move-node-to-workspace M'
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.xinWeChat'
-run = 'move-node-to-workspace M'
+run = ['layout floating', 'move-node-to-workspace M']
 
 [[on-window-detected]]
 if.app-id = 'com.readdle.SparkDesktop'
