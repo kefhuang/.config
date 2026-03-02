@@ -7,5 +7,14 @@
   "statusLine": {
     "type": "command",
     "command": "~/.claude/scripts/statusline.sh"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch"
+    ]
   }
 }
