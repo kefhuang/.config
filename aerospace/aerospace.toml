@@ -13,7 +13,10 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 30
 default-root-container-layout = 'tiles'
 default-root-container-orientation = 'auto'
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focused-monitor-changed = [
+    'move-mouse monitor-lazy-center',
+    'exec-and-forget ~/.config/aerospace/auto-layout.sh',
+]
 automatically-unhide-macos-hidden-apps = true
 persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "W"]
 
@@ -117,6 +120,18 @@ run = ['layout floating', 'move-node-to-workspace M']
 [[on-window-detected]]
 if.app-id = 'com.readdle.SparkDesktop'
 run = 'move-node-to-workspace M'
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = 'move-node-to-workspace A'
+
+[[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = 'move-node-to-workspace A'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome.app.caidcmannjgahlnbpmidmiecjcoiiigg'
+run = 'move-node-to-workspace A'
 
 [[on-window-detected]]
 if.app-id = 'com.hnc.Discord'
