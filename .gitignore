@@ -24,6 +24,12 @@ claude/*
 !claude/agents/
 !claude/agents/**
 
+# Raycast scripts (whitelist specific files only)
+!raycast/
+raycast/*
+!raycast/scripts/
+!raycast/scripts/**
+
 # Allowed root files
 !README.md
 !MAC.md
