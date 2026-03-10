@@ -1,0 +1,11 @@
+font-family = Maple Mono NF CN
+font-size = 13
+
+copy-on-select = false
+shell-integration-features = cursor,no-sudo,title,ssh-env,ssh-terminfo,path
+
+# Keep Cmd+N for new windows, but disable Cmd+T creating macOS tabs.
+keybind = super+t=unbind
+
+# Match typical terminal behavior instead of macOS app persistence.
+quit-after-last-window-closed = true

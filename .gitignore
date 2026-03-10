@@ -30,6 +30,11 @@ raycast/*
 !raycast/scripts/
 !raycast/scripts/**
 
+# Ghostty config (whitelist specific files only)
+!ghostty/
+ghostty/*
+!ghostty/config
+
 # Allowed root files
 !README.md
 !MAC.md
