@@ -5,6 +5,7 @@ after-startup-command = [
     'workspace W', 'layout accordion horizontal vertical',
     'workspace M', 'layout accordion horizontal vertical',
     'workspace 1',
+    'exec-and-forget ~/.config/aerospace/sketchybar.sh start',
 ]
 
 start-at-login = true
@@ -17,6 +18,9 @@ on-focused-monitor-changed = [
     'move-mouse monitor-lazy-center',
     'exec-and-forget ~/.config/aerospace/auto-layout.sh',
 ]
+on-focus-changed = [
+    'exec-and-forget ~/.config/aerospace/sketchybar.sh trigger',
+]
 automatically-unhide-macos-hidden-apps = true
 persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "W"]
 
@@ -27,7 +31,8 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "W"]
     inner.horizontal = 8
     inner.vertical =   8
     outer.left =       8
-    outer.bottom =     8
+    # Managed by ~/.config/aerospace/sketchybar.sh: 48 with SketchyBar, 8 otherwise.
+    outer.bottom =     48
     outer.top =        8
     outer.right =      8
 

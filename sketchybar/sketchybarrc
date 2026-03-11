@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+export WORKSPACE_ORDER="1 2 3 4 5 A C M W"
+
+sketchybar --remove aerospace.state >/dev/null 2>&1 || true
+sketchybar --remove aerospace.stack >/dev/null 2>&1 || true
+
+for ws in $WORKSPACE_ORDER; do
+    sketchybar --remove "aerospace.ws.$ws" >/dev/null 2>&1 || true
+done
+
+for i in $(seq 1 12); do
+    sketchybar --remove "aerospace.stack.$i" >/dev/null 2>&1 || true
+done
+
+sketchybar --bar height=34            \
+                 position=bottom      \
+                 topmost=window       \
+                 color=0xcc10181c     \
+                 blur_radius=20       \
+                 corner_radius=12     \
+                 y_offset=0           \
+                 margin=8             \
+                 padding_left=10      \
+                 padding_right=10
+
+sketchybar --default icon.font="SF Pro Display:Semibold:12.0" \
+                     label.font="SF Pro Display:Medium:12.0"   \
+                     icon.color=0xfff3efe8                     \
+                     label.color=0xfff3efe8                    \
+                     background.color=0x00000000              \
+                     background.height=26                     \
+                     background.corner_radius=9               \
+                     padding_left=8                           \
+                     padding_right=8
+
+sketchybar --add event aerospace_focus_change
+
+sketchybar --add item aerospace.state left                \
+           --set aerospace.state drawing=off              \
+                                  width=0                 \
+                                  script="$PLUGIN_DIR/aerospace_stack.sh"
+
+sketchybar --subscribe aerospace.state aerospace_focus_change \
+                                   front_app_switched         \
+                                   space_windows_change       \
+                                   display_change             \
+                                   system_woke
+
+for ws in $WORKSPACE_ORDER; do
+    sketchybar --add item "aerospace.ws.$ws" center        \
+               --set "aerospace.ws.$ws" icon="$ws"         \
+                                          label=""         \
+                                          drawing=off      \
+                                          width=dynamic    \
+                                          label.max_chars=160 \
+                                          icon.padding_left=10 \
+                                          icon.padding_right=6 \
+                                          label.padding_left=0 \
+                                          label.padding_right=10 \
+                                          background.height=28 \
+                                          background.corner_radius=9 \
+                                          background.border_width=1 \
+                                          background.color=0x2217313a \
+                                          background.border_color=0x66324f5a \
+                                          click_script="aerospace workspace $ws"
+done
+
+sketchybar --update
+"$PLUGIN_DIR/aerospace_stack.sh"

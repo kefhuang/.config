@@ -12,6 +12,8 @@
 !aerospace/**
 !wezterm/
 !wezterm/**
+!sketchybar/
+!sketchybar/**
 
 # Claude Code config (whitelist specific files only)
 !claude/
