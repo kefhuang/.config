@@ -3,7 +3,7 @@
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
-export WORKSPACE_ORDER="1 2 3 4 5 A C M W"
+export WORKSPACE_ORDER="1 2 3 4 5 A C M S W"
 
 sketchybar --remove aerospace.state >/dev/null 2>&1 || true
 sketchybar --remove aerospace.stack >/dev/null 2>&1 || true
@@ -19,16 +19,16 @@ done
 sketchybar --bar height=34            \
                  position=bottom      \
                  topmost=window       \
-                 color=0xcc10181c     \
-                 blur_radius=20       \
+                 color=0x20ffffff     \
+                 blur_radius=30       \
                  corner_radius=12     \
-                 y_offset=0           \
+                 y_offset=2           \
                  margin=8             \
                  padding_left=10      \
                  padding_right=10
 
-sketchybar --default icon.font="SF Pro Display:Semibold:12.0" \
-                     label.font="SF Pro Display:Medium:12.0"   \
+sketchybar --default icon.font="SF Pro Display:Semibold:14.0" \
+                     label.font="SF Pro Display:Medium:14.0"   \
                      icon.color=0xfff3efe8                     \
                      label.color=0xfff3efe8                    \
                      background.color=0x00000000              \

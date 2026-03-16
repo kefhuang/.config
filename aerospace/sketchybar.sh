@@ -6,7 +6,7 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 SKETCHYBAR_BIN="/opt/homebrew/bin/sketchybar"
 CONFIG_PATH="${CONFIG_PATH:-$HOME/.config/aerospace/aerospace.toml}"
-BAR_GAP="${BAR_GAP:-48}"
+BAR_GAP="${BAR_GAP:-46}"
 DEFAULT_GAP="${DEFAULT_GAP:-8}"
 
 bar_is_ready() {

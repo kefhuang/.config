@@ -6,16 +6,25 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 export LC_CTYPE="${LC_CTYPE:-en_US.UTF-8}"
 
-WORKSPACE_ORDER_STRING="${WORKSPACE_ORDER:-1 2 3 4 5 A C M W}"
+WORKSPACE_ORDER_STRING="${WORKSPACE_ORDER:-1 2 3 4 5 A C M S W}"
 GET_MONITOR_WIDTH="$HOME/.config/aerospace/get-monitor-width"
 
 CURRENT_BG="0xff244956"
 CURRENT_BORDER="0xff3f7686"
 CURRENT_TEXT="0xfff8fbfd"
 
-OTHER_BG="0x2217313a"
-OTHER_BORDER="0x66324f5a"
+OTHER_BG="0x44222222"
+OTHER_BORDER="0x66444444"
 OTHER_TEXT="0xffd5dee2"
+
+friendly_name() {
+    case "$1" in
+        "Google Chrome") printf 'Chrome' ;;
+        "Spark Desktop") printf 'Spark' ;;
+        "Notion Calendar") printf 'Calendar' ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
 
 trim_line() {
     printf '%s' "$1" | tr '\t' ' ' | tr '\n' ' ' | sed 's/[[:space:]][[:space:]]*/ /g; s/^ //; s/ $//'
@@ -110,7 +119,7 @@ list_apps_for_workspace() {
 
     while IFS= read -r app; do
         app="$(trim_line "$app")"
-        [ -n "$app" ] && apps+=("$app")
+        [ -n "$app" ] && apps+=("$(friendly_name "$app")")
     done < <(aerospace list-windows --workspace "$workspace" --format '%{app-name}' 2>/dev/null)
 
     printf '%s\n' "${apps[@]:-}"
@@ -123,7 +132,7 @@ segment_cost() {
 
     icon="$1"
     label="$2"
-    cost=$(( ${#icon} + 8 ))
+    cost=$(( ${#icon} + 4 ))
 
     if [ -n "$label" ]; then
         cost=$(( cost + ${#label} ))
@@ -187,7 +196,7 @@ available_chars() {
     local chars
 
     width="$(monitor_width)"
-    chars=$(( (width - 160) / 9 ))
+    chars=$(( (width - 60) / 8 ))
 
     if [ "$chars" -lt 48 ]; then
         chars=48
@@ -262,10 +271,6 @@ refresh_workspaces() {
             [ -n "$label" ] && app_list+=("$label")
         done < <(list_apps_for_workspace "$ws")
 
-        if [ "${#app_list[@]}" -eq 0 ] && [ "$ws" != "$current_workspace" ]; then
-            continue
-        fi
-
         workspace_names+=("$ws")
 
         if [ "$ws" = "$current_workspace" ]; then
@@ -275,8 +280,13 @@ refresh_workspaces() {
             workspace_current+=("0")
         fi
 
-        full_label="$(join_apps full "${app_list[@]}")"
-        compact_label="$(join_apps compact "${app_list[@]}")"
+        if [ "${#app_list[@]}" -gt 0 ]; then
+            full_label="$(join_apps full "${app_list[@]}")"
+            compact_label="$(join_apps compact "${app_list[@]}")"
+        else
+            full_label=""
+            compact_label=""
+        fi
 
         workspace_full+=("$full_label")
         workspace_compact+=("$compact_label")
@@ -335,23 +345,59 @@ refresh_workspaces() {
 
         if [ "$idx" -eq "$current_index" ]; then
             label="$current_label"
-            sketchybar --set "$item_name" drawing=on          \
-                                          icon="$ws"         \
-                                          label="$label"     \
-                                          icon.color="$CURRENT_TEXT" \
-                                          label.color="$CURRENT_TEXT" \
-                                          background.color="$CURRENT_BG" \
-                                          background.border_color="$CURRENT_BORDER"
+            if [ -z "$label" ]; then
+                sketchybar --set "$item_name" drawing=on          \
+                                              icon="$ws"         \
+                                              label=""            \
+                                              icon.padding_left=8 \
+                                              icon.padding_right=8 \
+                                              label.padding_left=0 \
+                                              label.padding_right=0 \
+                                              icon.color="$CURRENT_TEXT" \
+                                              label.color="$CURRENT_TEXT" \
+                                              background.color="$CURRENT_BG" \
+                                              background.border_color="$CURRENT_BORDER"
+            else
+                sketchybar --set "$item_name" drawing=on          \
+                                              icon="$ws"         \
+                                              label="$label"     \
+                                              icon.padding_left=10 \
+                                              icon.padding_right=6 \
+                                              label.padding_left=0 \
+                                              label.padding_right=10 \
+                                              icon.color="$CURRENT_TEXT" \
+                                              label.color="$CURRENT_TEXT" \
+                                              background.color="$CURRENT_BG" \
+                                              background.border_color="$CURRENT_BORDER"
+            fi
         else
             label="$(label_for_level "0" "$selected_level" "${workspace_full[$idx]}" "${workspace_compact[$idx]}")"
 
-            sketchybar --set "$item_name" drawing=on          \
-                                          icon="$ws"         \
-                                          label="$label"     \
-                                          icon.color="$OTHER_TEXT" \
-                                          label.color="$OTHER_TEXT" \
-                                          background.color="$OTHER_BG" \
-                                          background.border_color="$OTHER_BORDER"
+            if [ -z "$label" ]; then
+                sketchybar --set "$item_name" drawing=on          \
+                                              icon="$ws"         \
+                                              label=""            \
+                                              icon.padding_left=8 \
+                                              icon.padding_right=8 \
+                                              label.padding_left=0 \
+                                              label.padding_right=0 \
+                                              icon.color="$OTHER_TEXT" \
+                                              label.color="$OTHER_TEXT" \
+                                              background.color="$OTHER_BG" \
+                                              background.border_color="$OTHER_BORDER"
+            else
+                sketchybar --set "$item_name" drawing=on          \
+                                              icon="$ws"         \
+                                              label="$label"     \
+                                              icon.padding_left=10 \
+                                              icon.padding_right=6 \
+                                              label.padding_left=0 \
+                                              label.padding_right=10 \
+                                              icon.color="$OTHER_TEXT" \
+                                              label.color="$OTHER_TEXT" \
+                                              background.color="$OTHER_BG" \
+                                              background.border_color="$OTHER_BORDER"
+            fi
         fi
     done
 
