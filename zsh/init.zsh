@@ -56,8 +56,12 @@ if [[ -d "$HOME/.nvm" ]]; then
   npx() { _load_nvm && npx "$@"; }
 fi
 
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 _reset_kitty_keyboard_protocol() {
+  if [[ -z $_kkp_initialized ]]; then
+    _kkp_initialized=1
+    return
+  fi
   printf '\e[>0u'
 }
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 precmd_functions+=(_reset_kitty_keyboard_protocol)
