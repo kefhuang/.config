@@ -55,3 +55,9 @@ if [[ -d "$HOME/.nvm" ]]; then
   npm() { _load_nvm && npm "$@"; }
   npx() { _load_nvm && npx "$@"; }
 fi
+
+_reset_kitty_keyboard_protocol() {
+  printf '\e[>0u'
+}
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+precmd_functions+=(_reset_kitty_keyboard_protocol)
