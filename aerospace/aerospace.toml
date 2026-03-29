@@ -22,7 +22,10 @@ on-focus-changed = [
     'exec-and-forget ~/.config/aerospace/sketchybar.sh trigger',
 ]
 automatically-unhide-macos-hidden-apps = true
-persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "S", "W"]
+persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "O", "S", "W"]
+
+[workspace-to-monitor-force-assignment]
+O = 'secondary'
 
 [key-mapping]
     preset = 'qwerty'
@@ -37,8 +40,8 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "S", "W"]
     outer.right =      8
 
 [mode.main.binding]
-    ctrl-alt-c = 'exec-and-forget open -na "Google Chrome" --args --new-window --profile-directory=Default'
-    ctrl-alt-g = '''exec-and-forget /bin/sh -c '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --app-id=caidcmannjgahlnbpmidmiecjcoiiigg --new-window' '''
+    ctrl-alt-s = '''exec-and-forget osascript -e 'tell application "Safari" to make new document' -e 'tell application "Safari" to activate' '''
+    ctrl-alt-g = '''exec-and-forget osascript -e 'tell application "Google Gemini" to activate' -e 'tell application "System Events" to tell process "Google Gemini" to keystroke "n" using command down' '''
     ctrl-alt-t = 'exec-and-forget open -na Ghostty'
     ctrl-alt-f = '''exec-and-forget osascript -e 'tell application "Finder" to make new Finder window to POSIX file "/Users/kefhuang/Dropbox"' -e 'tell application "Finder" to activate' '''
     alt-f = 'fullscreen'
@@ -67,6 +70,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "S", "W"]
     alt-a = 'workspace A'
     alt-c = 'workspace C'
     alt-m = 'workspace M'
+    alt-o = 'workspace O'
     alt-s = 'workspace S'
     alt-w = 'workspace W'
 
@@ -78,6 +82,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "S", "W"]
     alt-shift-a = 'move-node-to-workspace A'
     alt-shift-c = 'move-node-to-workspace C'
     alt-shift-m = 'move-node-to-workspace M'
+    alt-shift-o = 'move-node-to-workspace O'
     alt-shift-s = 'move-node-to-workspace S'
     alt-shift-w = 'move-node-to-workspace W'
 
@@ -106,6 +111,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "A", "C", "M", "S", "W"]
     alt-shift-a = ['exec-and-forget ~/.config/aerospace/swap-workspace.sh A', 'mode main']
     alt-shift-c = ['exec-and-forget ~/.config/aerospace/swap-workspace.sh C', 'mode main']
     alt-shift-m = ['exec-and-forget ~/.config/aerospace/swap-workspace.sh M', 'mode main']
+    alt-shift-o = ['exec-and-forget ~/.config/aerospace/swap-workspace.sh O', 'mode main']
     alt-shift-s = ['exec-and-forget ~/.config/aerospace/swap-workspace.sh S', 'mode main']
     alt-shift-w = ['exec-and-forget ~/.config/aerospace/swap-workspace.sh W', 'mode main']
 
@@ -153,6 +159,10 @@ run = 'move-node-to-workspace W'
 [[on-window-detected]]
 if.app-id = 'com.tencent.WeWorkMac'
 run = 'move-node-to-workspace W'
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = 'move-node-to-workspace O'
 
 [[on-window-detected]]
 if.app-id = 'com.cron.electron'

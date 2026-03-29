@@ -141,6 +141,19 @@ segment_cost() {
     printf '%s' "$cost"
 }
 
+lookup_display() {
+    local key="$1"
+    local entries="$2"
+    local match="${entries##*${key}=}"
+
+    if [ "$match" = "$entries" ]; then
+        printf ''
+        return
+    fi
+
+    printf '%s' "${match%%;*}"
+}
+
 has_workspace() {
     local target
     local ws
@@ -168,16 +181,25 @@ hide_inactive_workspaces() {
     done
 }
 
-monitor_width() {
-    local monitor_name
-    local width
+monitor_width_for_display() {
+    local display_id="$1"
+    local line mid mname width
 
     if ! command -v aerospace >/dev/null 2>&1; then
         printf '1440'
         return
     fi
 
-    monitor_name="$(aerospace list-monitors --focused --format '%{monitor-name}' 2>/dev/null | head -n 1 || true)"
+    local monitor_name=""
+    while IFS= read -r line; do
+        mid="${line%% *}"
+        mname="${line#* }"
+        if [ "$mid" = "$display_id" ]; then
+            monitor_name="$mname"
+            break
+        fi
+    done < <(aerospace list-monitors --format '%{monitor-id} %{monitor-name}' 2>/dev/null)
+
     if [ -z "$monitor_name" ] || [ ! -x "$GET_MONITOR_WIDTH" ]; then
         printf '1440'
         return
@@ -191,17 +213,13 @@ monitor_width() {
     fi
 }
 
-available_chars() {
-    local width
+available_chars_for_width() {
+    local width="$1"
     local chars
-
-    width="$(monitor_width)"
     chars=$(( (width - 60) / 8 ))
-
     if [ "$chars" -lt 48 ]; then
         chars=48
     fi
-
     printf '%s' "$chars"
 }
 
@@ -236,8 +254,6 @@ refresh_workspaces() {
     local current_known=0
     local current_index=-1
     local level
-    local selected_level=3
-    local available
     local total
     local idx
     local label
@@ -250,18 +266,37 @@ refresh_workspaces() {
     local workspace_current=()
     local workspace_full=()
     local workspace_compact=()
+    local workspace_display=()
     local app_list=()
+    local mon_id
+    local ws_display_entries=""
 
     if ! command -v aerospace >/dev/null 2>&1; then
         hide_inactive_workspaces
         return
     fi
 
+    while IFS= read -r mon_id; do
+        [ -n "$mon_id" ] || continue
+        while IFS= read -r ws; do
+            ws="$(trim_line "$ws")"
+            [ -n "$ws" ] || continue
+            ws_display_entries="${ws_display_entries}${ws}=${mon_id};"
+        done < <(aerospace list-workspaces --monitor "$mon_id" 2>/dev/null)
+    done < <(aerospace list-monitors --format '%{monitor-id}' 2>/dev/null)
+
     current_workspace="$(aerospace list-workspaces --focused 2>/dev/null | head -n 1 || true)"
     if [ -z "$current_workspace" ]; then
         hide_inactive_workspaces
         return
     fi
+
+    local visible_entries=";"
+    local vws
+    while IFS= read -r vws; do
+        vws="$(trim_line "$vws")"
+        [ -n "$vws" ] && visible_entries="${visible_entries}${vws};"
+    done < <(aerospace list-workspaces --monitor all --visible --format '%{workspace}' 2>/dev/null)
 
     for ws in $WORKSPACE_ORDER_STRING; do
         [ "$ws" = "$current_workspace" ] && current_known=1
@@ -276,6 +311,8 @@ refresh_workspaces() {
         if [ "$ws" = "$current_workspace" ]; then
             workspace_current+=("1")
             current_index=$(( ${#workspace_names[@]} - 1 ))
+        elif case "$visible_entries" in *";${ws};"*) true ;; *) false ;; esac; then
+            workspace_current+=("1")
         else
             workspace_current+=("0")
         fi
@@ -290,6 +327,7 @@ refresh_workspaces() {
 
         workspace_full+=("$full_label")
         workspace_compact+=("$compact_label")
+        workspace_display+=("$(lookup_display "$ws" "$ws_display_entries")")
     done
 
     if [ "$current_known" -eq 0 ]; then
@@ -297,6 +335,7 @@ refresh_workspaces() {
         workspace_current+=("1")
         workspace_full+=("")
         workspace_compact+=("")
+        workspace_display+=("$(lookup_display "$current_workspace" "$ws_display_entries")")
         current_index=$(( ${#workspace_names[@]} - 1 ))
     fi
 
@@ -305,99 +344,120 @@ refresh_workspaces() {
         return
     fi
 
-    available="$(available_chars)"
-
-    for level in 0 1 2 3; do
-        total=0
-        for idx in "${!workspace_names[@]}"; do
-            label="$(label_for_level "${workspace_current[$idx]}" "$level" "${workspace_full[$idx]}" "${workspace_compact[$idx]}")"
-            total=$(( total + $(segment_cost "${workspace_names[$idx]}" "$label") ))
-        done
-
-        if [ "$total" -le "$available" ]; then
-            selected_level="$level"
-            break
-        fi
+    local unique_displays=""
+    local disp
+    for idx in "${!workspace_names[@]}"; do
+        disp="${workspace_display[$idx]}"
+        [ -z "$disp" ] && continue
+        case ";${unique_displays};" in
+            *";${disp};"*) ;;
+            *) unique_displays="${unique_displays}${disp};" ;;
+        esac
     done
 
-    current_label="$(label_for_level "1" "$selected_level" "${workspace_full[$current_index]}" "${workspace_compact[$current_index]}")"
+    local display_level_entries=""
+    for disp in $(printf '%s' "$unique_displays" | tr ';' ' '); do
+        [ -z "$disp" ] && continue
+        local disp_width disp_avail disp_level=3
+        disp_width="$(monitor_width_for_display "$disp")"
+        disp_avail="$(available_chars_for_width "$disp_width")"
 
-    if [ "$selected_level" -eq 3 ]; then
-        total=0
-        for idx in "${!workspace_names[@]}"; do
-            if [ "$idx" -eq "$current_index" ]; then
-                continue
+        for level in 0 1 2 3; do
+            total=0
+            for idx in "${!workspace_names[@]}"; do
+                [ "${workspace_display[$idx]}" = "$disp" ] || continue
+                label="$(label_for_level "${workspace_current[$idx]}" "$level" "${workspace_full[$idx]}" "${workspace_compact[$idx]}")"
+                total=$(( total + $(segment_cost "${workspace_names[$idx]}" "$label") ))
+            done
+            if [ "$total" -le "$disp_avail" ]; then
+                disp_level="$level"
+                break
             fi
-            total=$(( total + $(segment_cost "${workspace_names[$idx]}" "") ))
         done
 
-        current_budget=$(( available - total - $(segment_cost "${workspace_names[$current_index]}" "") ))
+        display_level_entries="${display_level_entries}${disp}=${disp_level};"
+    done
+
+    local current_disp="${workspace_display[$current_index]}"
+    local current_disp_level
+    current_disp_level="$(lookup_display "$current_disp" "$display_level_entries")"
+    [ -z "$current_disp_level" ] && current_disp_level=3
+
+    current_label="$(label_for_level "1" "$current_disp_level" "${workspace_full[$current_index]}" "${workspace_compact[$current_index]}")"
+
+    if [ "$current_disp_level" -eq 3 ] && [ -n "$current_disp" ]; then
+        local cur_disp_width cur_disp_avail
+        cur_disp_width="$(monitor_width_for_display "$current_disp")"
+        cur_disp_avail="$(available_chars_for_width "$cur_disp_width")"
+        total=0
+        for idx in "${!workspace_names[@]}"; do
+            [ "${workspace_display[$idx]}" = "$current_disp" ] || continue
+            [ "$idx" -eq "$current_index" ] && continue
+            total=$(( total + $(segment_cost "${workspace_names[$idx]}" "") ))
+        done
+        current_budget=$(( cur_disp_avail - total - $(segment_cost "${workspace_names[$current_index]}" "") ))
         if [ "$current_budget" -lt 0 ]; then
             current_budget=0
         fi
-
         current_label="$(shorten "$current_label" "$current_budget")"
     fi
 
     for idx in "${!workspace_names[@]}"; do
         ws="${workspace_names[$idx]}"
         item_name="aerospace.ws.$ws"
+        local ws_disp="${workspace_display[$idx]}"
+
+        if [ -z "$ws_disp" ]; then
+            sketchybar --set "$item_name" drawing=off label=""
+            continue
+        fi
+
+        local bg_color border_color text_color
+        if [ "${workspace_current[$idx]}" = "1" ]; then
+            bg_color="$CURRENT_BG"
+            border_color="$CURRENT_BORDER"
+            text_color="$CURRENT_TEXT"
+        else
+            bg_color="$OTHER_BG"
+            border_color="$OTHER_BORDER"
+            text_color="$OTHER_TEXT"
+        fi
 
         if [ "$idx" -eq "$current_index" ]; then
             label="$current_label"
-            if [ -z "$label" ]; then
-                sketchybar --set "$item_name" drawing=on          \
-                                              icon="$ws"         \
-                                              label=""            \
-                                              icon.padding_left=8 \
-                                              icon.padding_right=8 \
-                                              label.padding_left=0 \
-                                              label.padding_right=0 \
-                                              icon.color="$CURRENT_TEXT" \
-                                              label.color="$CURRENT_TEXT" \
-                                              background.color="$CURRENT_BG" \
-                                              background.border_color="$CURRENT_BORDER"
-            else
-                sketchybar --set "$item_name" drawing=on          \
-                                              icon="$ws"         \
-                                              label="$label"     \
-                                              icon.padding_left=10 \
-                                              icon.padding_right=6 \
-                                              label.padding_left=0 \
-                                              label.padding_right=10 \
-                                              icon.color="$CURRENT_TEXT" \
-                                              label.color="$CURRENT_TEXT" \
-                                              background.color="$CURRENT_BG" \
-                                              background.border_color="$CURRENT_BORDER"
-            fi
         else
-            label="$(label_for_level "0" "$selected_level" "${workspace_full[$idx]}" "${workspace_compact[$idx]}")"
+            local ws_level
+            ws_level="$(lookup_display "$ws_disp" "$display_level_entries")"
+            [ -z "$ws_level" ] && ws_level=3
+            label="$(label_for_level "${workspace_current[$idx]}" "$ws_level" "${workspace_full[$idx]}" "${workspace_compact[$idx]}")"
+        fi
 
-            if [ -z "$label" ]; then
-                sketchybar --set "$item_name" drawing=on          \
-                                              icon="$ws"         \
-                                              label=""            \
-                                              icon.padding_left=8 \
-                                              icon.padding_right=8 \
-                                              label.padding_left=0 \
-                                              label.padding_right=0 \
-                                              icon.color="$OTHER_TEXT" \
-                                              label.color="$OTHER_TEXT" \
-                                              background.color="$OTHER_BG" \
-                                              background.border_color="$OTHER_BORDER"
-            else
-                sketchybar --set "$item_name" drawing=on          \
-                                              icon="$ws"         \
-                                              label="$label"     \
-                                              icon.padding_left=10 \
-                                              icon.padding_right=6 \
-                                              label.padding_left=0 \
-                                              label.padding_right=10 \
-                                              icon.color="$OTHER_TEXT" \
-                                              label.color="$OTHER_TEXT" \
-                                              background.color="$OTHER_BG" \
-                                              background.border_color="$OTHER_BORDER"
-            fi
+        if [ -z "$label" ]; then
+            sketchybar --set "$item_name" display="$ws_disp" \
+                                          drawing=on          \
+                                          icon="$ws"         \
+                                          label=""            \
+                                          icon.padding_left=8 \
+                                          icon.padding_right=8 \
+                                          label.padding_left=0 \
+                                          label.padding_right=0 \
+                                          icon.color="$text_color" \
+                                          label.color="$text_color" \
+                                          background.color="$bg_color" \
+                                          background.border_color="$border_color"
+        else
+            sketchybar --set "$item_name" display="$ws_disp" \
+                                          drawing=on          \
+                                          icon="$ws"         \
+                                          label="$label"     \
+                                          icon.padding_left=10 \
+                                          icon.padding_right=6 \
+                                          label.padding_left=0 \
+                                          label.padding_right=10 \
+                                          icon.color="$text_color" \
+                                          label.color="$text_color" \
+                                          background.color="$bg_color" \
+                                          background.border_color="$border_color"
         fi
     done
 

@@ -3,7 +3,7 @@
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
-export WORKSPACE_ORDER="1 2 3 4 5 A C M S W"
+export WORKSPACE_ORDER="1 2 3 4 5 A C M O S W"
 
 sketchybar --remove aerospace.state >/dev/null 2>&1 || true
 sketchybar --remove aerospace.stack >/dev/null 2>&1 || true
