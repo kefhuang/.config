@@ -25,6 +25,13 @@ claude/*
 !claude/commands/**
 !claude/agents/
 !claude/agents/**
+!claude/hooks/
+!claude/hooks/**
+
+# Agents (claude/skills -> ../agents/skills symlink)
+!agents/
+!agents/skills/
+!agents/skills/**
 
 # Raycast scripts (whitelist specific files only)
 !raycast/
