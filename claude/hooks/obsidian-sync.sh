@@ -12,6 +12,9 @@ project=$(cd "$cwd" 2>/dev/null && git remote get-url origin 2>/dev/null \
 [ -z "$project" ] && project=$(basename "$cwd")
 project="${project#.}"
 
+log_file="$HOME/.claude/logs/obsidian-sync.log"
+mkdir -p "$(dirname "$log_file")"
+
 pid_file="/tmp/claude-obsidian-${session_id}.pid"
 if [ -f "$pid_file" ]; then
   old_pid=$(cat "$pid_file")
@@ -19,11 +22,19 @@ if [ -f "$pid_file" ]; then
   wait "$old_pid" 2>/dev/null
 fi
 
-(
+nohup bash -c '
+  log_file="'"$log_file"'"
+  transcript_path="'"$transcript_path"'"
+  project="'"$project"'"
+  session_id="'"$session_id"'"
+  pid_file="'"$pid_file"'"
+
+  echo "[$(date)] [$session_id] scheduled: project=$project" >> "$log_file"
   sleep 3600
+  echo "[$(date)] [$session_id] woke up, starting sync" >> "$log_file"
 
   if [ -f "$HOME/.claude/settings.local.json" ]; then
-    vault=$(jq -r '.env.OBSIDIAN_VAULT // empty' "$HOME/.claude/settings.local.json" | sed "s#^~#$HOME#")
+    vault=$(jq -r ".env.OBSIDIAN_VAULT // empty" "$HOME/.claude/settings.local.json" | sed "s#^~#$HOME#")
   fi
   vault="${vault:-$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian}"
   date_str=$(date +%Y-%m-%d)
@@ -31,9 +42,12 @@ fi
   mkdir -p "$target_dir"
 
   claude -p --allowedTools "Read,Write" \
-    "使用 obsidian-worklog skill 同步工作日志。transcript 文件：$transcript_path，项目：$project，日期：$date_str，目标目录：$target_dir"
+    "使用 obsidian-worklog skill 同步工作日志。transcript 文件：$transcript_path，项目：$project，日期：$date_str，目标目录：$target_dir" \
+    >> "$log_file" 2>&1
 
+  echo "[$(date)] [$session_id] sync finished (exit=$?)" >> "$log_file"
   rm -f "$pid_file"
-) &
+' </dev/null >> "$log_file" 2>&1 &
 
+disown $!
 echo $! > "$pid_file"

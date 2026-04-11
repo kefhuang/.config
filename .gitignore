@@ -25,6 +25,7 @@ claude/*
 !claude/agents/**
 !claude/hooks/
 !claude/hooks/**
+!claude/CLAUDE.md
 
 # Agents (claude/skills -> ../agents/skills symlink)
 !agents/
