@@ -10,6 +10,7 @@ cwd=$(echo "$input" | jq -r '.cwd')
 project=$(cd "$cwd" 2>/dev/null && git remote get-url origin 2>/dev/null \
   | sed 's#.*/##;s#\.git$##')
 [ -z "$project" ] && project=$(basename "$cwd")
+project="${project#.}"
 
 pid_file="/tmp/claude-obsidian-${session_id}.pid"
 if [ -f "$pid_file" ]; then
@@ -21,7 +22,10 @@ fi
 (
   sleep 3600
 
-  vault="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian"
+  if [ -f "$HOME/.claude/settings.local.json" ]; then
+    vault=$(jq -r '.env.OBSIDIAN_VAULT // empty' "$HOME/.claude/settings.local.json" | sed "s#^~#$HOME#")
+  fi
+  vault="${vault:-$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian}"
   date_str=$(date +%Y-%m-%d)
   target_dir="$vault/WorkLog/$project"
   mkdir -p "$target_dir"

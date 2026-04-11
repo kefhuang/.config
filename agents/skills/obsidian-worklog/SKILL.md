@@ -7,10 +7,11 @@ description: Sync current work session summary to Obsidian vault as a daily work
 
 ## 步骤
 
-1. **识别项目**：运行 `git remote get-url origin` 提取 repo 名（取最后一段，去掉 .git）。如果没有 git remote 则用当前目录名。
+1. **识别项目**：运行 `git remote get-url origin` 提取 repo 名（取最后一段，去掉 .git）。如果没有 git remote 则用当前目录名。最终项目名需去掉前导 `.`（例如 `.config` → `config`）。
 
 2. **确定路径**：
-   - vault 基础路径：`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian/WorkLog/{project}/`
+   - vault 基础路径：从 `~/.claude/settings.local.json` 的 `env.OBSIDIAN_VAULT` 读取，fallback 为 `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian`
+   - WorkLog 目录：`{vault}/WorkLog/{project}/`
    - 目标文件：`{YYYY-MM-DD}.md`（今天的日期）
 
 3. **获取工作内容**：

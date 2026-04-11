@@ -10,8 +10,6 @@
 !tmux/**
 !aerospace/
 !aerospace/**
-!wezterm/
-!wezterm/**
 !sketchybar/
 !sketchybar/**
 
@@ -45,6 +43,7 @@ ghostty/*
 !ghostty/config
 
 # Allowed root files
+!CLAUDE.md
 !README.md
 !MAC.md
 !UBUNTU.md
