@@ -41,8 +41,8 @@ nohup bash -c '
   target_dir="$vault/WorkLog/$project"
   mkdir -p "$target_dir"
 
-  claude -p --allowedTools "Read,Write" \
-    "使用 obsidian-worklog skill 同步工作日志。transcript 文件：$transcript_path，项目：$project，日期：$date_str，目标目录：$target_dir" \
+  claude -p "使用 obsidian-worklog skill 同步工作日志。transcript 文件：$transcript_path，项目：$project，日期：$date_str，目标目录：$target_dir" \
+    --allowedTools "Read,Write" \
     >> "$log_file" 2>&1
 
   echo "[$(date)] [$session_id] sync finished (exit=$?)" >> "$log_file"
