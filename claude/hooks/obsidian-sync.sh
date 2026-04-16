@@ -1,11 +1,10 @@
 #!/bin/bash
 
 input=$(cat)
-transcript_path=$(echo "$input" | jq -r '.transcript_path')
 session_id=$(echo "$input" | jq -r '.session_id')
 cwd=$(echo "$input" | jq -r '.cwd')
 
-[ -z "$transcript_path" ] || [ "$transcript_path" = "null" ] && exit 0
+[ -z "$session_id" ] || [ "$session_id" = "null" ] && exit 0
 
 project=$(cd "$cwd" 2>/dev/null && git remote get-url origin 2>/dev/null \
   | sed 's#.*/##;s#\.git$##')
@@ -22,31 +21,32 @@ if [ -f "$pid_file" ]; then
   wait "$old_pid" 2>/dev/null
 fi
 
-nohup bash -c '
-  log_file="'"$log_file"'"
-  transcript_path="'"$transcript_path"'"
-  project="'"$project"'"
-  session_id="'"$session_id"'"
-  pid_file="'"$pid_file"'"
+export OBSIDIAN_SYNC_LOG="$log_file"
+export OBSIDIAN_SYNC_PROJECT="$project"
+export OBSIDIAN_SYNC_SESSION="$session_id"
+export OBSIDIAN_SYNC_PID_FILE="$pid_file"
 
-  echo "[$(date)] [$session_id] scheduled: project=$project" >> "$log_file"
+nohup bash -c '
+  echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] scheduled: project=$OBSIDIAN_SYNC_PROJECT" >> "$OBSIDIAN_SYNC_LOG"
   sleep 3600
-  echo "[$(date)] [$session_id] woke up, starting sync" >> "$log_file"
+  echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] woke up, starting sync" >> "$OBSIDIAN_SYNC_LOG"
 
   if [ -f "$HOME/.claude/settings.local.json" ]; then
     vault=$(jq -r ".env.OBSIDIAN_VAULT // empty" "$HOME/.claude/settings.local.json" | sed "s#^~#$HOME#")
   fi
   vault="${vault:-$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian}"
   date_str=$(date +%Y-%m-%d)
-  target_dir="$vault/WorkLog/$project"
-  mkdir -p "$target_dir"
+  target_file="$vault/Raw/WorkLog/$date_str.md"
+  mkdir -p "$(dirname "$target_file")"
 
-  claude -p "使用 obsidian-worklog skill 同步工作日志。transcript 文件：$transcript_path，项目：$project，日期：$date_str，目标目录：$target_dir" \
+  claude -p --resume "$OBSIDIAN_SYNC_SESSION" --fork-session \
     --allowedTools "Read,Write" \
-    >> "$log_file" 2>&1
+    --model sonnet \
+    "使用 obsidian-worklog skill 同步工作日志。项目：$OBSIDIAN_SYNC_PROJECT，日期：$date_str，目标文件：$target_file" \
+    >> "$OBSIDIAN_SYNC_LOG" 2>&1
 
-  echo "[$(date)] [$session_id] sync finished (exit=$?)" >> "$log_file"
-  rm -f "$pid_file"
+  echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] sync finished (exit=$?)" >> "$OBSIDIAN_SYNC_LOG"
+  rm -f "$OBSIDIAN_SYNC_PID_FILE"
 ' </dev/null >> "$log_file" 2>&1 &
 
 disown $!
