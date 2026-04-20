@@ -9,8 +9,6 @@
 !tmux/
 !tmux/**
 tmux/plugins/
-!aerospace/
-!aerospace/**
 !sketchybar/
 !sketchybar/**
 
