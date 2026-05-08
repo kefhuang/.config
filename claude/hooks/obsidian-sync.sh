@@ -34,9 +34,9 @@ nohup bash -c '
   if [ -f "$HOME/.claude/settings.local.json" ]; then
     vault=$(jq -r ".env.OBSIDIAN_VAULT // empty" "$HOME/.claude/settings.local.json" | sed "s#^~#$HOME#")
   fi
-  vault="${vault:-$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian}"
+  vault="${vault:-$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian/Raw/WorkLog/KefengsMacbookPro}"
   date_str=$(date +%Y-%m-%d)
-  target_file="$vault/Raw/WorkLog/$date_str.md"
+  target_file="$vault/$date_str.md"
   mkdir -p "$(dirname "$target_file")"
 
   claude -p --resume "$OBSIDIAN_SYNC_SESSION" --fork-session \

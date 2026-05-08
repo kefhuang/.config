@@ -11,7 +11,7 @@ description: Sync current work session summary to Obsidian vault as a daily work
 
 2. **确定路径**：
    - 目标文件由 prompt 参数 `目标文件` 指定
-   - 如果没有指定：vault 从 `~/.claude/settings.local.json` 的 `env.OBSIDIAN_VAULT` 读取，fallback 为 `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/KefengsObsidian`，文件为 `{vault}/Raw/WorkLog/{YYYY-MM-DD}.md`
+   - 如果没有指定：vault 从 `~/.claude/settings.local.json` 的 `env.OBSIDIAN_VAULT` 读取，文件为 `{vault}/{YYYY-MM-DD}.md`
 
 3. **获取工作内容**：直接从当前对话上下文总结（hook 通过 --resume 提供完整对话历史）。
 
