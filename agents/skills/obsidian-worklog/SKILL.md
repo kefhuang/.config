@@ -7,7 +7,11 @@ description: Sync current work session summary to Obsidian vault as a daily work
 
 ## 步骤
 
-1. **识别项目**：从 prompt 参数获取项目名。如果没有，运行 `git remote get-url origin` 提取 repo 名（取最后一段，去掉 .git）。如果没有 git remote 则用当前目录名。去掉前导 `.`。
+1. **识别项目**：
+   - 读 `{vault}/../projects.md`（vault 即下一步说的 OBSIDIAN_VAULT），抽出所有 `- 项目名` 行作为候选列表
+   - 结合 prompt 里的「当前目录」和「git remote」从候选里挑最匹配的项目名
+   - 严格模式：找不到匹配时，用「当前目录」basename 去掉前导 `.` 兜底，**不要**追加新名字到 projects.md（由用户手动维护）
+   - 如果 projects.md 不存在，直接走兜底逻辑
 
 2. **确定路径**：
    - 目标文件由 prompt 参数 `目标文件` 指定

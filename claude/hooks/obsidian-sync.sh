@@ -6,10 +6,7 @@ cwd=$(echo "$input" | jq -r '.cwd')
 
 [ -z "$session_id" ] || [ "$session_id" = "null" ] && exit 0
 
-project=$(cd "$cwd" 2>/dev/null && git remote get-url origin 2>/dev/null \
-  | sed 's#.*/##;s#\.git$##')
-[ -z "$project" ] && project=$(basename "$cwd")
-project="${project#.}"
+git_remote=$(cd "$cwd" 2>/dev/null && git remote get-url origin 2>/dev/null)
 
 log_file="$HOME/.claude/logs/obsidian-sync.log"
 mkdir -p "$(dirname "$log_file")"
@@ -22,12 +19,13 @@ if [ -f "$pid_file" ]; then
 fi
 
 export OBSIDIAN_SYNC_LOG="$log_file"
-export OBSIDIAN_SYNC_PROJECT="$project"
+export OBSIDIAN_SYNC_CWD="$cwd"
+export OBSIDIAN_SYNC_GIT_REMOTE="$git_remote"
 export OBSIDIAN_SYNC_SESSION="$session_id"
 export OBSIDIAN_SYNC_PID_FILE="$pid_file"
 
 nohup bash -c '
-  echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] scheduled: project=$OBSIDIAN_SYNC_PROJECT" >> "$OBSIDIAN_SYNC_LOG"
+  echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] scheduled: cwd=$OBSIDIAN_SYNC_CWD remote=$OBSIDIAN_SYNC_GIT_REMOTE" >> "$OBSIDIAN_SYNC_LOG"
   sleep 3600
   echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] woke up, starting sync" >> "$OBSIDIAN_SYNC_LOG"
 
@@ -42,7 +40,7 @@ nohup bash -c '
   claude -p --resume "$OBSIDIAN_SYNC_SESSION" --fork-session \
     --allowedTools "Read,Write" \
     --model sonnet \
-    "使用 obsidian-worklog skill 同步工作日志。项目：$OBSIDIAN_SYNC_PROJECT，日期：$date_str，目标文件：$target_file" \
+    "使用 obsidian-worklog skill 同步工作日志。当前目录：$OBSIDIAN_SYNC_CWD，git remote：$OBSIDIAN_SYNC_GIT_REMOTE，日期：$date_str，目标文件：$target_file" \
     >> "$OBSIDIAN_SYNC_LOG" 2>&1
 
   echo "[$(date)] [$OBSIDIAN_SYNC_SESSION] sync finished (exit=$?)" >> "$OBSIDIAN_SYNC_LOG"
