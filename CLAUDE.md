@@ -17,8 +17,6 @@ macOS/Linux dotfiles repo living at `~/.config`. Configuration is deployed via s
 
 | Tool | Command |
 |------|---------|
-| AeroSpace | `aerospace reload-config` |
-| SketchyBar | `sketchybar --reload` |
 | Zsh | `source ~/.config/zsh/zshrc` |
 
 ## Zsh Sourcing Chain

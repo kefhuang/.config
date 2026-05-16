@@ -31,35 +31,7 @@ Map CapsLock to both Ctrl (held) and Esc (tapped):
 2. Import [Caps Lock to Esc, Ctrl and Numpad](https://ke-complex-modifications.pqrs.org/#CapsLockToEscCtrlNumPad)
 3. Enable the modification
 
-## 4. Primary Machine Only
-
-### AeroSpace
-
-```bash
-brew install --cask nikitabobko/tap/aerospace
-```
-
-Config at `aerospace/aerospace.toml`, read automatically from `~/.config/aerospace/`.
-
-After editing config: `aerospace reload-config`
-
-### SketchyBar
-
-```bash
-brew tap FelixKratz/formulae
-brew install sketchybar
-brew services start sketchybar
-```
-
-Config at `sketchybar/sketchybarrc`, read automatically from `~/.config/sketchybar/`.
-
-After editing config: `sketchybar --reload`
-
-### Raycast Scripts
-
-Import scripts from `raycast/scripts/` via Raycast → Script Commands.
-
-### Dock
+## 4. Dock
 
 Hide the dock with a 2-second delay:
 ```bash

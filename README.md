@@ -19,10 +19,7 @@ git checkout master
 | `zsh/` | Zsh config — Zim framework + Powerlevel10k |
 | `vim/` | `.vimrc` |
 | `tmux/` | Tmux config |
-| `aerospace/` | AeroSpace window manager (macOS) |
-| `sketchybar/` | SketchyBar status bar (macOS) |
 | `ghostty/` | Ghostty terminal (macOS) |
-| `raycast/scripts/` | Raycast scripts (macOS) |
 | `claude/` | Claude Code config (settings, hooks, scripts) |
 | `agents/skills/` | AI agent skills (Claude Code, Codex, Gemini) |
 

@@ -16,10 +16,6 @@ claude/*
 !claude/settings.json
 !claude/scripts/
 !claude/scripts/**
-!claude/commands/
-!claude/commands/**
-!claude/agents/
-!claude/agents/**
 !claude/hooks/
 !claude/hooks/**
 !claude/CLAUDE.md
@@ -38,6 +34,7 @@ ghostty/*
 
 # Allowed root files
 !CLAUDE.md
+!AGENTS.md
 !README.md
 !MAC.md
 !UBUNTU.md
